@@ -4,15 +4,19 @@ import (
 	"io"
 )
 
-// Test will return whether or not the data contained in the first 512 bytes of
-// the input buffer is binary data.  It will attempt to properly handle UTF-8
-// encoded data - see the source for more information.
+// BlockSize is the amount of data that will be considered when testing for
+// binary data.
+const BlockSize = 512
+
+// Test will return whether or not the data contained in the first BlockSize
+// bytes of the input buffer is binary data.  It will attempt to properly
+// handle UTF-8 encoded data - see the source for more information.
 func Test(buf []byte) bool {
 	if len(buf) == 0 {
 		return false
 	}
-	if len(buf) > 512 {
-		buf = buf[:512]
+	if len(buf) > BlockSize {
+		buf = buf[:BlockSize]
 	}
 
 	// Check for UTF-8 byte-order mark
@@ -111,7 +115,7 @@ func Test(buf []byte) bool {
 // TestReader performs the same checks as Test, but will read the data to test
 // from the provided io.Reader.
 func TestReader(r io.Reader) (bool, error) {
-	buf := make([]byte, 512)
+	buf := make([]byte, BlockSize)
 	n, err := r.Read(buf)
 	if err != nil {
 		return false, err
